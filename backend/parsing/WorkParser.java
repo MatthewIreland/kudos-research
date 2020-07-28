@@ -1,11 +1,10 @@
 package parsing;
 
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.UUID;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -53,16 +52,27 @@ public class WorkParser {
         this.workFile = workFile;
     }
 
-    public void parseAutomarkable() throws IOException {
+    public ParseResult parseAutomarkable() throws IOException {
 
         // Read the work file and join the lines into a single string.
         String contents = Files.lines(workFile).collect(Collectors.joining("\n"));
 
-        // Use the regex to find all instances of `question` environments.
-        parseQuestions(contents, "");
+        WorkMetadata metadata = parseMetadata(contents);
+
+        List<Automarkable> automarkables = new LinkedList<>();
+
+        // Go through the question hierarchy and parse automarkable environments.
+        parseQuestions(contents, "", automarkables);
+
+        return new ParseResult(metadata, automarkables);
     }
 
-    private void parseQuestions(String input, String currentQuestionId) {
+    private WorkMetadata parseMetadata(String input) {
+        // TODO
+        return new WorkMetadata("spqr1", "FoCS", 1);
+    }
+
+    private void parseQuestions(String input, String currentQuestionId, List<Automarkable> output) {
 
         // Check for (sub)*questions in the input.
         boolean hasQuestions = false;
@@ -78,7 +88,7 @@ public class WorkParser {
             String nextQuestionId = currentQuestionId.isEmpty() ? questionId : currentQuestionId + "." + questionId;
 
             // Recursively parse sub-questions.
-            parseQuestions(questionContents, nextQuestionId);
+            parseQuestions(questionContents, nextQuestionId, output);
         }
 
         // If there are no questions in the input, look for an automarkable environment.
@@ -92,19 +102,9 @@ public class WorkParser {
                 int port = Integer.parseInt(automarkableMatcher.group(MARKER_PORT_GROUP));
                 String contents = automarkableMatcher.group(CONTENTS_GROUP);
 
-                // For now, print out the parameters and the contents
-                System.out.println("Question: " + currentQuestionId);
-                System.out.println("Language: " + language);
-                System.out.println("Marker: " + url + ":" + port);
-                System.out.println(contents);
+                Automarkable automarkable = new Automarkable(currentQuestionId, language, url, port, contents);
 
-                // Create a JSON object for the JSON-RPC call to the automarker
-                JSONObject request = createRequestObject(currentQuestionId, contents);
-
-                // Call the automarker
-                JSONObject response = doRpc(request);
-
-                // TODO: do something with the response.
+                output.add(automarkable);
             }
 
             if (automarkableMatcher.find()) {
@@ -112,27 +112,5 @@ public class WorkParser {
                 // TODO: should this be an error?
             }
         }
-    }
-
-    private JSONObject createRequestObject(String exerciseId, String automarkableContents) {
-
-        JSONObject params = new JSONObject();
-
-        params.put("exerciseId", exerciseId);
-        params.put("automarkableContents", automarkableContents);
-
-        JSONObject request = new JSONObject();
-
-        request.put("jsonrpc", "2.0");
-        request.put("method", "automark");
-        request.put("params", params);
-        request.put("id", UUID.randomUUID().toString());
-
-        return request;
-    }
-
-    private JSONObject doRpc(JSONObject request) {
-        // TODO: get the server and port number, and send the JSON, then return the response.
-        return null;
     }
 }
