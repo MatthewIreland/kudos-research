@@ -5,40 +5,32 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
-public class SupervisionTemplate {
+public class SupervisionTemplate{
 
-    public String fileName;
-    public String studentName;
-    public String studentEmail;
-    public String svVenue;
-    public String svCourse;
-    public String svNumber;
-    public String svDate;
-    public String svTime;
+    private SupervisionInfo supervisionInfo;
+    private SupervisionQuestions questions;
 
 
-    public SupervisionTemplate(String fileName, String studentName, String studentEmail, String svVenue,
-                               String svCourse, String svNumber, String svDate, String svTime) {
+    public SupervisionTemplate(SupervisionInfo supervisionInfo){
         //these are the things that the user has to specify when modifying the template
-        this.fileName = fileName; //
-        this.studentName = studentName;
-        this.studentEmail = studentEmail;
-        this.svVenue = svVenue;
-        this.svCourse = svCourse;
-        this.svNumber = svNumber;
-        this.svDate = svDate;
-        this.svTime = svTime;
+        this.supervisionInfo = supervisionInfo;
+    }
+
+    public SupervisionTemplate(SupervisionInfo supervisionInfo, SupervisionQuestions questions) {
+        //these are the things that the user has to specify when modifying the template
+        this.supervisionInfo = supervisionInfo;
+        this.questions = questions;
     }
 
     public void create(){
         HashMap<String, String> studentData = new HashMap<>();
-        studentData.put("studentname", studentName);
-        studentData.put("studentemail", studentEmail);
-        studentData.put("svvenue", svVenue);
-        studentData.put("svcourse", svCourse);
-        studentData.put("svnumber", svNumber);
-        studentData.put("svdate", svDate);
-        studentData.put("svtime", svTime);
+        studentData.put("studentname", supervisionInfo.getStudentName());
+        studentData.put("studentemail", supervisionInfo.getStudentEmail());
+        studentData.put("svvenue", supervisionInfo.getSvVenue());
+        studentData.put("svcourse", supervisionInfo.getSvCourse());
+        studentData.put("svnumber", supervisionInfo.getSvNumber());
+        studentData.put("svdate", supervisionInfo.getSvDate());
+        studentData.put("svtime", supervisionInfo.getSvTime());
         try {
             setSupervisionHeader(studentData);
         } catch (IOException e) {
@@ -48,7 +40,7 @@ public class SupervisionTemplate {
     public void setSupervisionHeader(HashMap<String, String> studentData) throws IOException {
 
         try {
-            BufferedWriter writeToFile = new BufferedWriter(new FileWriter(fileName));
+            BufferedWriter writeToFile = new BufferedWriter(new FileWriter(supervisionInfo.getFileName()));
             Iterator dataItem = studentData.entrySet().iterator();
 
             // Constant that stores the newcommand name just for ease
@@ -63,6 +55,7 @@ public class SupervisionTemplate {
             }
             writeToFile.write("\\begin{document}");
             writeToFile.newLine();
+            questions.writeQuestions();
             writeToFile.write("\\end{document}");
             writeToFile.close();
 
