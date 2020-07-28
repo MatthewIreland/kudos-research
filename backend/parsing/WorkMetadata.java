@@ -1,5 +1,7 @@
 package parsing;
 
+import org.json.JSONObject;
+
 public class WorkMetadata {
 
     private final String studentCrsid;
@@ -10,5 +12,15 @@ public class WorkMetadata {
         this.studentCrsid = studentCrsid;
         this.courseName = courseName;
         this.svNumber = svNumber;
+    }
+
+    public JSONObject toJson() {
+        JSONObject obj = new JSONObject();
+
+        obj.put("studentCrsid", studentCrsid);
+        obj.put("courseName", courseName);
+        obj.put("svNumber", svNumber);
+
+        return obj;
     }
 }

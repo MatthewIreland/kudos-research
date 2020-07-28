@@ -2,8 +2,13 @@ package parsing;
 
 import org.json.JSONObject;
 
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class WorkSender {
 
@@ -11,33 +16,40 @@ public class WorkSender {
 
     }
 
-    public void sendWorkToAutomarker(ParseResult result) {
+    public void sendWorkToAutomarker(ParseResult result) throws IOException {
 
         WorkMetadata metadata = result.getMetadata();
         List<Automarkable> automarkables = result.getAutomarkableList();
 
         for (Automarkable automarkable : automarkables) {
+            String questionId = automarkable.getQuestionId();
+            String language = automarkable.getLanguage();
+            String markerUrl = automarkable.getMarkerUrl();
+            String contents = automarkable.getContents();
+
             // For now, print out the parameters and the contents
-            System.out.println("Question: " + automarkable.getQuestionId());
-            System.out.println("Language: " + automarkable.getLanguage());
-            System.out.println("Marker: " + automarkable.getMarkerUrl() + ":" + automarkable.getMarkerPort());
-            System.out.println(automarkable.getContents());
+            System.out.println("Question: " + questionId);
+            System.out.println("Language: " + language);
+            System.out.println("Marker URL: " + markerUrl);
+            System.out.println(contents);
 
             // Create a JSON object for the JSON-RPC call to the automarker
-            JSONObject request = createRequestObject(automarkable.getQuestionId(), automarkable.getContents());
+            JSONObject request = createRequestObject(metadata, questionId, contents);
 
             // Call the automarker
-            JSONObject response = doRpc(request);
+            JSONObject response = doRpc(markerUrl, request);
+            System.out.println(response);
 
             // TODO: do something with the response.
         }
     }
 
-    private JSONObject createRequestObject(String exerciseId, String automarkableContents) {
+    private JSONObject createRequestObject(WorkMetadata metadata, String questionId, String automarkableContents) {
 
         JSONObject params = new JSONObject();
 
-        params.put("exerciseId", exerciseId);
+        params.put("metadata", metadata.toJson());
+        params.put("questionId", questionId);
         params.put("automarkableContents", automarkableContents);
 
         JSONObject request = new JSONObject();
@@ -50,8 +62,35 @@ public class WorkSender {
         return request;
     }
 
-    private JSONObject doRpc(JSONObject request) {
-        // TODO: get the server and port number, and send the JSON, then return the response.
-        return null;
+    private JSONObject doRpc(String markerUrl, JSONObject request) throws IOException {
+
+        URL url = new URL(markerUrl);
+        if (url.getProtocol().matches("https?")) {
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+
+            connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+            connection.setRequestProperty("Accept", "application/json");
+
+            connection.setDoOutput(true);
+            try (OutputStream output = connection.getOutputStream()) {
+                byte[] body = request.toString().getBytes(StandardCharsets.UTF_8);
+                output.write(body);
+            }
+
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode < 200 || responseCode >= 400) {
+                throw new RuntimeException(); // TODO
+            }
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+                String body = reader.lines().collect(Collectors.joining());
+
+                return new JSONObject(body);
+            }
+        } else {
+            throw new RuntimeException("Invalid protocol (" + url.getProtocol() + "), expected http or https."); // TODO
+        }
     }
 }

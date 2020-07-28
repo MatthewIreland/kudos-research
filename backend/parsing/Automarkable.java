@@ -5,14 +5,12 @@ public class Automarkable {
     private final String questionId;
     private final String language;
     private final String markerUrl;
-    private final int markerPort;
     private final String contents;
 
-    public Automarkable(String questionId, String language, String markerUrl, int markerPort, String contents) {
+    public Automarkable(String questionId, String language, String markerUrl, String contents) {
         this.questionId = questionId;
         this.language = language;
         this.markerUrl = markerUrl;
-        this.markerPort = markerPort;
         this.contents = contents;
     }
 
@@ -26,10 +24,6 @@ public class Automarkable {
 
     public String getMarkerUrl() {
         return markerUrl;
-    }
-
-    public int getMarkerPort() {
-        return markerPort;
     }
 
     public String getContents() {

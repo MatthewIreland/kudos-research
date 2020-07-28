@@ -13,7 +13,7 @@ public class WorkParser {
 
     // Magic constants identifying the different groups in the regular expression.
     private static final String PREFIX_GROUP = "prefix", QUESTION_ID_GROUP = "questionId", CONTENTS_GROUP = "contents",
-            LANGUAGE_GROUP = "language", MARKER_URL_GROUP = "url", MARKER_PORT_GROUP = "port";
+            LANGUAGE_GROUP = "language", MARKER_URL_GROUP = "url";
 
     // A regular expression to find `question`, `subquestion`, etc. environments, and extract args and contents.
     private static final Pattern questionRegex;
@@ -36,10 +36,9 @@ public class WorkParser {
     static {
         String languageArg = "\\{(?<" + LANGUAGE_GROUP + ">.*?)\\}";
         String urlArg = "\\{(?<" + MARKER_URL_GROUP + ">.*?)\\}";
-        String portArg = "\\{(?<" + MARKER_PORT_GROUP + ">.*?)\\}";
 
         String pattern =
-                "\\\\begin\\{automarkable\\}" + languageArg + urlArg + portArg
+                "\\\\begin\\{automarkable\\}" + languageArg + urlArg
                         + "(?<" + CONTENTS_GROUP + ">.*?)" +
                 "\\\\end\\{automarkable\\}";
 
@@ -99,10 +98,9 @@ public class WorkParser {
 
                 String language = automarkableMatcher.group(LANGUAGE_GROUP);
                 String url = automarkableMatcher.group(MARKER_URL_GROUP);
-                int port = Integer.parseInt(automarkableMatcher.group(MARKER_PORT_GROUP));
                 String contents = automarkableMatcher.group(CONTENTS_GROUP);
 
-                Automarkable automarkable = new Automarkable(currentQuestionId, language, url, port, contents);
+                Automarkable automarkable = new Automarkable(currentQuestionId, language, url, contents);
 
                 output.add(automarkable);
             }
