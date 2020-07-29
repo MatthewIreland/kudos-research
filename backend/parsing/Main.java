@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Main {
-    public static void main(String[] args) throws URISyntaxException, IOException {
+    public static void main(String[] args) throws URISyntaxException, IOException, ParsingException {
         // Get a path to "example.tex" relative to the current file.
         Path file = Paths.get(Main.class.getResource("example.tex").toURI());
 

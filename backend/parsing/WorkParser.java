@@ -46,10 +46,16 @@ public class WorkParser {
         this.workFile = workFile;
     }
 
-    public ParseResult parse() throws IOException {
+    public ParseResult parse() throws ParsingException {
 
-        // Read the work file and join the lines into a single string.
-        String contents = Files.lines(workFile).collect(Collectors.joining("\n"));
+        String contents;
+
+        try {
+            // Read the work file and join the lines into a single string.
+            contents = Files.lines(workFile).collect(Collectors.joining("\n"));
+        } catch (IOException e) {
+            throw new ParsingException("IO Exception encountered while parsing", e);
+        }
 
         WorkMetadata metadata = parseMetadata(contents);
 
@@ -58,7 +64,7 @@ public class WorkParser {
         return new ParseResult(metadata, automarkables);
     }
 
-    private WorkMetadata parseMetadata(String input) {
+    private WorkMetadata parseMetadata(String input) throws ParsingException {
 
         Matcher crsidMatcher = crsidRegex.matcher(input);
 
@@ -68,16 +74,16 @@ public class WorkParser {
             WorkMetadata metadata = new WorkMetadata(crsid);
 
             if (crsidMatcher.find()) {
-                throw new RuntimeException("Found more than one CRSID"); // TODO
+                throw new ParsingException("Found more than one CRSID");
             }
 
             return metadata;
         } else {
-            throw new RuntimeException("Couldn't find student CRSID"); // TODO
+            throw new ParsingException("Couldn't find student CRSID");
         }
     }
 
-    private List<Automarkable> parseAutomarkable(String input) {
+    private List<Automarkable> parseAutomarkable(String input) throws ParsingException {
         List<Automarkable> output = new LinkedList<>();
 
         // Use the regex to find all instances of `automarkable` environments.
