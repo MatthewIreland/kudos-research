@@ -48,7 +48,7 @@ public class WorkSender {
 
         JSONObject params = new JSONObject();
 
-        params.put("metadata", metadata.toJson());
+        params.put("studentCrsid", metadata.getStudentCrsid());
         params.put("uuid", uuid);
         params.put("automarkableContents", automarkableContents);
 

@@ -30,6 +30,16 @@ public class WorkParser {
         automarkableRegex = Pattern.compile(pattern, Pattern.DOTALL);
     }
 
+    private static final String CRSID_GROUP = "crsid";
+
+    private static final Pattern crsidRegex;
+
+    static {
+        String pattern = "\\\\newcommand\\{\\\\studentemail\\}\\{(?<" + CRSID_GROUP + ">\\w+?)@cam\\.ac\\.uk\\}";
+
+        crsidRegex = Pattern.compile(pattern, Pattern.DOTALL);
+    }
+
     private final Path workFile;
 
     public WorkParser(Path workFile) {
@@ -49,8 +59,22 @@ public class WorkParser {
     }
 
     private WorkMetadata parseMetadata(String input) {
-        // TODO
-        return new WorkMetadata("spqr1", "FoCS", 1);
+
+        Matcher crsidMatcher = crsidRegex.matcher(input);
+
+        if (crsidMatcher.find()) {
+            String crsid = crsidMatcher.group(CRSID_GROUP);
+
+            WorkMetadata metadata = new WorkMetadata(crsid);
+
+            if (crsidMatcher.find()) {
+                throw new RuntimeException("Found more than one CRSID"); // TODO
+            }
+
+            return metadata;
+        } else {
+            throw new RuntimeException("Couldn't find student CRSID"); // TODO
+        }
     }
 
     private List<Automarkable> parseAutomarkable(String input) {
