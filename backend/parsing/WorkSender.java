@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -33,18 +34,48 @@ public class WorkSender {
             System.out.println("UUID: " + uuid);
             System.out.println(contents);
 
-            // Create a JSON object for the JSON-RPC call to the automarker
-            JSONObject request = createRequestObject(metadata, uuid, contents);
-
-            // Call the automarker
-            JSONObject response = doRpc(markerUrl, request);
+            JSONObject response = callAutomarker(metadata, markerUrl, uuid, contents);
             System.out.println(response);
 
             // TODO: do something with the response.
         }
     }
 
-    private JSONObject createRequestObject(WorkMetadata metadata, String uuid, String automarkableContents) {
+    private JSONObject callAutomarker(WorkMetadata metadata, String markerUrl, String uuid, String automarkableContents) throws IOException {
+
+        String requestId = UUID.randomUUID().toString();
+
+        // Create a JSON object for the JSON-RPC call to the automarker
+        JSONObject request = createRequestObject(metadata, uuid, automarkableContents, requestId);
+
+        // Call the automarker
+        JSONObject response = doRpc(markerUrl, request);
+
+        if (!Objects.equals(response.opt("jsonrpc"), "2.0")) {
+            throw new RuntimeException(); // TODO
+        }
+
+        if (response.has("error")) {
+            JSONObject error = response.getJSONObject("error");
+
+            int code = error.getInt("code");
+            String message = error.getString("message");
+
+            throw new RuntimeException("JSON-RPC error (code " + code + "): " + message); // TODO
+        }
+
+        if (response.has("result")) {
+            if (!Objects.equals(response.opt("id"), requestId)) {
+                throw new RuntimeException(); // TODO
+            }
+
+            return response.getJSONObject("result");
+        }
+
+        throw new RuntimeException("Missing result field in response."); // TODO
+    }
+
+    private JSONObject createRequestObject(WorkMetadata metadata, String uuid, String automarkableContents, String requestId) {
 
         JSONObject params = new JSONObject();
 
@@ -57,7 +88,7 @@ public class WorkSender {
         request.put("jsonrpc", "2.0");
         request.put("method", "automark");
         request.put("params", params);
-        request.put("id", UUID.randomUUID().toString());
+        request.put("id", requestId);
 
         return request;
     }
