@@ -2,20 +2,16 @@ package parsing;
 
 public class Automarkable {
 
-    private final String questionId;
     private final String language;
     private final String markerUrl;
+    private final String uuid;
     private final String contents;
 
-    public Automarkable(String questionId, String language, String markerUrl, String contents) {
-        this.questionId = questionId;
+    public Automarkable(String language, String markerUrl, String uuid, String contents) {
         this.language = language;
         this.markerUrl = markerUrl;
+        this.uuid = uuid;
         this.contents = contents;
-    }
-
-    public String getQuestionId() {
-        return questionId;
     }
 
     public String getLanguage() {
@@ -24,6 +20,10 @@ public class Automarkable {
 
     public String getMarkerUrl() {
         return markerUrl;
+    }
+
+    public String getUuid() {
+        return uuid;
     }
 
     public String getContents() {

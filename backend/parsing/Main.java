@@ -11,7 +11,7 @@ public class Main {
         Path file = Paths.get(Main.class.getResource("example.tex").toURI());
 
         WorkParser parser = new WorkParser(file);
-        ParseResult result = parser.parseAutomarkable();
+        ParseResult result = parser.parse();
 
         WorkSender sender = new WorkSender();
         sender.sendWorkToAutomarker(result);

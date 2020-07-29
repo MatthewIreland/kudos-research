@@ -22,19 +22,19 @@ public class WorkSender {
         List<Automarkable> automarkables = result.getAutomarkableList();
 
         for (Automarkable automarkable : automarkables) {
-            String questionId = automarkable.getQuestionId();
             String language = automarkable.getLanguage();
             String markerUrl = automarkable.getMarkerUrl();
+            String uuid = automarkable.getUuid();
             String contents = automarkable.getContents();
 
             // For now, print out the parameters and the contents
-            System.out.println("Question: " + questionId);
             System.out.println("Language: " + language);
             System.out.println("Marker URL: " + markerUrl);
+            System.out.println("UUID: " + uuid);
             System.out.println(contents);
 
             // Create a JSON object for the JSON-RPC call to the automarker
-            JSONObject request = createRequestObject(metadata, questionId, contents);
+            JSONObject request = createRequestObject(metadata, uuid, contents);
 
             // Call the automarker
             JSONObject response = doRpc(markerUrl, request);
@@ -44,12 +44,12 @@ public class WorkSender {
         }
     }
 
-    private JSONObject createRequestObject(WorkMetadata metadata, String questionId, String automarkableContents) {
+    private JSONObject createRequestObject(WorkMetadata metadata, String uuid, String automarkableContents) {
 
         JSONObject params = new JSONObject();
 
         params.put("metadata", metadata.toJson());
-        params.put("questionId", questionId);
+        params.put("uuid", uuid);
         params.put("automarkableContents", automarkableContents);
 
         JSONObject request = new JSONObject();
