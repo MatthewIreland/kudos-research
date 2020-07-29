@@ -12,18 +12,20 @@ import java.util.stream.Collectors;
 public class WorkParser {
 
     // Magic constants identifying the different groups in the regular expression.
-    private static final String LANGUAGE_GROUP = "language", MARKER_URL_GROUP = "url", UUID_GROUP = "uuid",CONTENTS_GROUP = "contents";
+    private static final String LANGUAGE_GROUP = "language", MARKER_HOST_GROUP = "host",
+            MARKER_PORT_GROUP = "port", UUID_GROUP = "uuid",CONTENTS_GROUP = "contents";
 
     // A regular expression to find `automarkable` environments, and extract args and contents.
     private static final Pattern automarkableRegex;
 
     static {
         String languageArg = "\\{(?<" + LANGUAGE_GROUP + ">.*?)\\}";
-        String urlArg = "\\{(?<" + MARKER_URL_GROUP + ">.*?)\\}";
+        String hostArg = "\\{(?<" + MARKER_HOST_GROUP + ">.*?)\\}";
+        String portArg = "\\{(?<" + MARKER_PORT_GROUP + ">.*?)\\}";
         String uuidArg = "\\{(?<" + UUID_GROUP + ">.*?)\\}";
 
         String pattern =
-                "\\\\begin\\{automarkable\\}" + languageArg + urlArg + uuidArg
+                "\\\\begin\\{automarkable\\}" + languageArg + hostArg + portArg + uuidArg
                         + "(?<" + CONTENTS_GROUP + ">.*?)" +
                 "\\\\end\\{automarkable\\}";
 
@@ -91,11 +93,17 @@ public class WorkParser {
 
         while (automarkableMatcher.find()) {
             String language = automarkableMatcher.group(LANGUAGE_GROUP);
-            String url = automarkableMatcher.group(MARKER_URL_GROUP);
+            String host = automarkableMatcher.group(MARKER_HOST_GROUP);
+            int port;
+            try {
+                port = Integer.parseInt(automarkableMatcher.group(MARKER_PORT_GROUP));
+            } catch (NumberFormatException e) {
+                throw new ParsingException("Port value isn't a valid integer", e);
+            }
             String uuid = automarkableMatcher.group(UUID_GROUP);
             String contents = automarkableMatcher.group(CONTENTS_GROUP);
 
-            Automarkable automarkable = new Automarkable(language, url, uuid, contents);
+            Automarkable automarkable = new Automarkable(language, host, port, uuid, contents);
             output.add(automarkable);
         }
 

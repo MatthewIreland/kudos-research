@@ -3,13 +3,15 @@ package parsing;
 public class Automarkable {
 
     private final String language;
-    private final String markerUrl;
+    private final String markerHost;
+    private final int markerPort;
     private final String uuid;
     private final String contents;
 
-    public Automarkable(String language, String markerUrl, String uuid, String contents) {
+    public Automarkable(String language, String markerHost, int markerPort, String uuid, String contents) {
         this.language = language;
-        this.markerUrl = markerUrl;
+        this.markerHost = markerHost;
+        this.markerPort = markerPort;
         this.uuid = uuid;
         this.contents = contents;
     }
@@ -18,8 +20,12 @@ public class Automarkable {
         return language;
     }
 
-    public String getMarkerUrl() {
-        return markerUrl;
+    public String getMarkerHost() {
+        return markerHost;
+    }
+
+    public int getMarkerPort() {
+        return markerPort;
     }
 
     public String getUuid() {
