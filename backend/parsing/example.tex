@@ -3,25 +3,45 @@
 \newcommand{\studentemail}{spqr1@cam.ac.uk}
 
 \begin{document}
+    \begin{automarkable}{ocaml}{}{}{77c91053-ad59-431d-a0e0-b32f21c04f97}
+        let rec allListsDistinct l =
+        match l with
+        | [] -> true
+        | x::xs -> (List.fold_left (fun a b -> a && x != b) true xs) && (allListsDistinct xs)
+        ;;
 
-    \begin{question}{1}
-        \begin{subquestion}{a}
-            \begin{automarkable}{ocaml}{localhost}{8080}{uuid}
-                let rec fact n =
-                  if n <= 1 then 1 else n * fact(n-1);;
-            \end{automarkable}
-        \end{subquestion}
-        \begin{subquestion}{b}
-            \begin{automarkable}{ocaml}{localhost}{8080}{uuid}
-                let rec fact n =
-                  if n <= 1 then 1 else n * fact(n-1);;
-            \end{automarkable}
-        \end{subquestion}
-    \end{question}
+        let rec isin x l =
+        match x, l with
+        | _, [] -> false
+        | x, y::ys -> (x=y) || (isin x ys)
+        ;;
 
-    \begin{question}{2}
-        \begin{automarkable}{ocaml}{localhost}{8080}{uuid}
-            let square x = x * x;;
-        \end{automarkable}
-    \end{question}
+        let setEqual xs ys =
+        (List.fold_left (fun a b -> (a && (isin b ys))) true xs) &&
+        (List.fold_left (fun a b -> (a && (isin b xs))) true ys)
+        ;;
+
+        (* -- *)
+
+        let rec insAll a xs =
+        match xs with
+        | [] -> [[a]]
+        | x::xs -> (a::x::xs) :: (List.map (fun l -> x::l) (insAll a xs))
+        ;;
+
+        let rec perms xs =
+        match xs with
+        | [] -> [[]]
+        | x::xs -> List.fold_left (fun acc l -> acc @ (insAll x l)) [] (perms xs)
+        ;;
+
+        let dedupperms xs =
+        let rec rmdups bs =
+        match bs with
+        | [] -> []
+        | c::cs -> if (isin c cs) then (rmdups cs) else c::(rmdups cs)
+        in
+        rmdups (perms xs)
+        ;;
+    \end{automarkable}
 \end{document}
