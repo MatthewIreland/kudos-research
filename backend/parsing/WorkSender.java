@@ -42,10 +42,13 @@ public class WorkSender {
 
     private void callAutomarker(String host, int port, WorkMetadata metadata, String uuid, String automarkableContents) throws SubmissionException {
 
-        long requestId = 1; // TODO increment id when appropriate
+        long requestId = generateRequestId();
+
+        // Compute the token for the request
+        String token = computeToken(getPassphrase(host, port), getSalt(host, port), requestId, System.currentTimeMillis());
 
         // Create a JSON object for the JSON-RPC call to the automarker
-        JSONObject request = createRequestObject(metadata, uuid, automarkableContents, requestId);
+        JSONObject request = createRequestObject(token, metadata, uuid, automarkableContents, requestId);
 
         // Call the automarker
         JSONObject response = doRpc(host, port, request);
@@ -101,10 +104,7 @@ public class WorkSender {
         }
     }
 
-    private JSONObject createRequestObject(WorkMetadata metadata, String uuid, String automarkableContents, long requestId) {
-
-        // TODO passphrase and salt should be marker-specific and stored in a database
-        String token = computeToken("kudos", "salt", requestId, System.currentTimeMillis());
+    private JSONObject createRequestObject(String token, WorkMetadata metadata, String uuid, String automarkableContents, long requestId) {
 
         JSONObject params = new JSONObject();
 
@@ -153,5 +153,25 @@ public class WorkSender {
             // This should almost certainly not be caught; it means the SHA-256 algorithm is missing.
             throw new RuntimeException(e);
         }
+    }
+
+    private long requestId = 1;
+
+    private long generateRequestId() {
+        // Generates a request id. Returns a different, higher number every time
+        // (except in case of overflow; this will need special treatment on the marking server)
+
+        // TODO: this is just a placeholder.
+        return requestId++;
+    }
+
+    private String getPassphrase(String markerHost, int markerPort) {
+        // TODO: this is just a placeholder.
+        return "kudos";
+    }
+
+    private String getSalt(String markerHost, int markerPort) {
+        // TODO: this is just a placeholder.
+        return "salt";
     }
 }
