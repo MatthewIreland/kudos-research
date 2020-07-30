@@ -8,13 +8,13 @@ import java.util.*;
 public class SupervisionTemplate{
 
     private SupervisionInfo supervisionInfo;
-    private SupervisionQuestions questions;
+    private SupervisionAgenda tasks;
 
 
-    public SupervisionTemplate(SupervisionInfo supervisionInfo, SupervisionQuestions questions) {
+    public SupervisionTemplate(SupervisionInfo supervisionInfo, SupervisionAgenda tasks) {
         //these are the things that the user has to specify when modifying the template
         this.supervisionInfo = supervisionInfo;
-        this.questions = questions;
+        this.tasks = tasks;
     }
 
     public void setSupervisionHeader(){
@@ -47,11 +47,11 @@ public class SupervisionTemplate{
         }
     }
 
-    public void setSupervisionBody() throws IOException {
-        try (BufferedWriter writeToFile = new BufferedWriter(new FileWriter(supervisionInfo.getFileName()))){
-            writeToFile.write("\\input{per_supervision_headers.tex}");
-            StringBuilder toPrint = questions.writeQuestions(questions.getQuestionList());
+    public void setSupervisionQuestions() throws IOException {
+        try (BufferedWriter writeToFile = new BufferedWriter(new FileWriter("supervision_questions.tex"))){
+            StringBuilder toPrint = tasks.writeTasks(tasks.getTaskList());
             writeToFile.write(toPrint.toString());
+
         } catch (IOException e){
             e.printStackTrace();
             System.out.println("Error occurred");
@@ -59,7 +59,22 @@ public class SupervisionTemplate{
     }
 
     public void createHeaderAndBodyFiles() throws IOException {
-        setSupervisionHeader();
-        setSupervisionBody();
+        setSupervisionHeader(); //separate per_supervision_headers.tex
+        setSupervisionQuestions(); //separate supervision_questions.tex
+        //supervisionInfo.getFileName()
+
+        try (BufferedWriter writeToFile = new BufferedWriter(new FileWriter(supervisionInfo.getFileName()))){
+            StringBuilder toPrint = new StringBuilder();
+            toPrint.append("\\documentclass[10pt,twoside,a4paper]{article}" + "\n");
+            toPrint.append("\\input{per_supervision_headers.tex}" + "\n");
+            toPrint.append("\\input{template.tex}" + "   % template.tex has \\input{includes.tex} at the top" + "\n");
+            toPrint.append("\\begin{document}" + "\n");
+            toPrint.append("\\input{supervision_questions.tex}" + "\n");
+            toPrint.append("\\end{document}");
+            writeToFile.write(toPrint.toString());
+        } catch (IOException e){
+            e.printStackTrace();
+            System.out.println("Error occurred");
+        }
     }
 }

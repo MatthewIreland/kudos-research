@@ -18,8 +18,8 @@ public class Main {
         String svTime = null;
 
         SupervisionInfo supervisionInfo = new SupervisionInfo(studentName, studentEmail, svrName, svVenue,svCourse, svNumber, svDate, svTime);
-        SupervisionQuestions questionList = new SupervisionQuestions(new LinkedList<Question>());
-        SupervisionTemplate template = new SupervisionTemplate(supervisionInfo, questionList);
+        SupervisionAgenda taskList = new SupervisionAgenda(new LinkedList<Task>());
+        SupervisionTemplate template = new SupervisionTemplate(supervisionInfo, taskList);
 
         template.createHeaderAndBodyFiles(); //this will create the separate header and body files
     }
