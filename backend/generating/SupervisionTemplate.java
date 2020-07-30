@@ -11,56 +11,55 @@ public class SupervisionTemplate{
     private SupervisionQuestions questions;
 
 
-    public SupervisionTemplate(SupervisionInfo supervisionInfo){
-        //these are the things that the user has to specify when modifying the template
-        this.supervisionInfo = supervisionInfo;
-    }
-
     public SupervisionTemplate(SupervisionInfo supervisionInfo, SupervisionQuestions questions) {
         //these are the things that the user has to specify when modifying the template
         this.supervisionInfo = supervisionInfo;
         this.questions = questions;
     }
 
-    public void create(){
-        HashMap<String, String> studentData = new HashMap<>();
+    public void setSupervisionHeader(){
+        LinkedHashMap<String, String> studentData = new LinkedHashMap<>();
         studentData.put("studentname", supervisionInfo.getStudentName());
         studentData.put("studentemail", supervisionInfo.getStudentEmail());
+        studentData.put("svrname", supervisionInfo.getSvrName());
         studentData.put("svvenue", supervisionInfo.getSvVenue());
         studentData.put("svcourse", supervisionInfo.getSvCourse());
         studentData.put("svnumber", supervisionInfo.getSvNumber());
         studentData.put("svdate", supervisionInfo.getSvDate());
         studentData.put("svtime", supervisionInfo.getSvTime());
-        try {
-            setSupervisionHeader(studentData);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public void setSupervisionHeader(HashMap<String, String> studentData) throws IOException {
-
-        try {
-            BufferedWriter writeToFile = new BufferedWriter(new FileWriter(supervisionInfo.getFileName()));
+        try (BufferedWriter writeToFile = new BufferedWriter(new FileWriter("per_supervision_headers.tex"))){
             Iterator dataItem = studentData.entrySet().iterator();
 
             // Constant that stores the newcommand name just for ease
             String newCommand = "\\newcommand";
 
-            // This could be made more general with removal of backslashes etc.
-            writeToFile.write("\\documentclass[10pt,twoside,a4paper]{article}");
+            // This loop will correctly populate the header with details on the student name, course etc.
             while (dataItem.hasNext()){
                 Map.Entry pair = (Map.Entry)dataItem.next();
-                writeToFile.write(newCommand.concat("{\\".concat(pair.getKey().toString())).concat("}{").concat(pair.getValue().toString()).concat("}"));
+                String toPrint = newCommand + "{\\" + pair.getKey().toString() + "}{" + pair.getValue().toString() + "}";
+                writeToFile.write(toPrint);
+                // the above line will, for example, print out \newcommand{\studentname}{Harry Potter}
                 writeToFile.newLine();
             }
-            writeToFile.write("\\begin{document}");
-            writeToFile.newLine();
-            questions.writeQuestions();
-            writeToFile.write("\\end{document}");
-            writeToFile.close();
-
-        } catch (IOException e){
+        } catch (IOException e) {
+            e.printStackTrace();
             System.out.println("Error occurred");
         }
+    }
+
+    public void setSupervisionBody() throws IOException {
+        try (BufferedWriter writeToFile = new BufferedWriter(new FileWriter(supervisionInfo.getFileName()))){
+            writeToFile.write("\\input{per_supervision_headers.tex}");
+            StringBuilder toPrint = questions.writeQuestions(questions.getQuestionList());
+            writeToFile.write(toPrint.toString());
+        } catch (IOException e){
+            e.printStackTrace();
+            System.out.println("Error occurred");
+        }
+    }
+
+    public void createHeaderAndBodyFiles() throws IOException {
+        setSupervisionHeader();
+        setSupervisionBody();
     }
 }

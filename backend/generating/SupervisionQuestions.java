@@ -2,47 +2,52 @@ package generation;
 
 import java.util.List;
 
-public class SupervisionQuestions{
+public class SupervisionQuestions {
 
     private List<Question> questionList;
+    private StringBuilder toPrint;
 
     public SupervisionQuestions(List<Question> questionList) {
         this.questionList = questionList;
+        this.toPrint = new StringBuilder();
     }
 
-    public String writeQuestions(){
-        String toPrint = new String();
-        for(Question question: questionList){
-            //TODO deal with subquestion stuff
-            if(question.getExamQuestion()){
-                ExamQuestion exam = (ExamQuestion) question;
-                toPrint += "\\begin{examquestion}{" + exam.getYear() + "}{" + exam.getPaper() + "}{" + exam.getQuestionNumber() + "}";
-                toPrint += "\n";
-                if(exam.getAutomarkable()){
-                    //prints out \begin{automarkable}{ocaml}{https://automarker.example.com}{1234}
-                    Question question1 = (Question) exam;
-                    AutomarkableQuestion automarkableQuestion = (AutomarkableQuestion) question1;
-                    toPrint += "\\begin{automarkable}{" + automarkableQuestion.getLanguage() + "}{" + automarkableQuestion.getUrl() + "}{" + automarkableQuestion.getPort() + "}" + "\n";
-                    toPrint += automarkableQuestion.getQuestionText();
-                    toPrint += "\\end{automarkable}";
-                }
-                else{
+    public List<Question> getQuestionList(){ return questionList; }
 
-                    toPrint += "\n";
-                    //subquestion stuff
-                    toPrint += "\\end{examquestion}";
+    public void writeGeneralQuestion(Question question){
+        toPrint.append(question.getQuestionText() + "\n");
+        // question that is not an exam question
+        if (question.isAutomarkable()){
+            AutomarkableQuestion automarkableQuestion = (AutomarkableQuestion) question;
+            toPrint.append("\\begin{automarkable}{" + automarkableQuestion.getLanguage() + "}{" + automarkableQuestion.getUrl() + "}" + "\n");
+            toPrint.append("\\end{automarkable}" + "\n");
+        }
+        if (question.hasSubQuestion()){
+            //exam question with subparts
+            toPrint.append("\\begin{enumerate}" + "\n" + "\\item ");
+            writeQuestions(question.getSubQuestionList());
+        }
+        toPrint.append("\\end{enumerate}");
+    }
+
+    public StringBuilder writeQuestions(List<Question> questionList){
+        for (Question question : questionList){
+            //exam questions
+            if (question.isExamQuestion()) {
+                ExamQuestion exam = (ExamQuestion) question;
+                if (!question.isSubQuestion()){
+                    // will print out in the form of \begin{examquestion}{1900}{1}{1}
+                    toPrint.append("\\begin{examquestion}{" + exam.getYear() + "}{" + exam.getPaper() + "}{" + exam.getQuestionNumber() + "}" + "\n");
                 }
+                writeGeneralQuestion(question);
+                toPrint.append("\\end{examquestion}");
             }
             else{
-                //TODO: format in sections
-                toPrint += "\\section{" + question.getQuestionText() + "}";
-                toPrint += "\n";
-                if(question.getAutomarkable()){
-                    AutomarkableQuestion automarkableQuestion = (AutomarkableQuestion) question;
-                    toPrint += "\\begin{automarkable}{" + automarkableQuestion.getLanguage() + "}{" + automarkableQuestion.getUrl() + "}{" + automarkableQuestion.getPort() + "}" + "\n";
-                    toPrint += automarkableQuestion.getQuestionText();
-                    toPrint += "\\end{automarkable}";
+                if (!question.isSubQuestion()){
+                    // will print out in the form of \section{insert question here}
+                    toPrint.append("\\section{" + question.getQuestionText() + "}" + "\n");
                 }
+                writeGeneralQuestion(question);
             }
         }
         return toPrint;
