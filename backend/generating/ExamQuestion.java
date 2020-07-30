@@ -6,13 +6,13 @@ public class ExamQuestion extends Question{
 
     int year;
     int paper;
-    int questionNumber;
+    int examQuestionNumber;
 
-    public ExamQuestion(String questionText, int questionID, boolean isExamQuestion, boolean automarkable, List<Question> subQuestionList, boolean isSubQuestion, int year, int paper, int questionNumber) {
-        super(questionText, questionID, isExamQuestion, automarkable, subQuestionList, isSubQuestion);
+    public ExamQuestion(String questionText, boolean isExamQuestion, boolean automarkable, List<Question> subQuestionList, boolean isSubQuestion, int year, int paper, int examQuestionNumber) {
+        super(questionText, isExamQuestion, automarkable, subQuestionList, isSubQuestion);
         this.year = year;
         this.paper = paper;
-        this.questionNumber = questionNumber;
+        this.examQuestionNumber = examQuestionNumber;
     }
 
     public int getYear() {
@@ -23,7 +23,7 @@ public class ExamQuestion extends Question{
         return paper;
     }
 
-    public int getQuestionNumber() {
-        return questionNumber;
+    public int getExamQuestionNumber() {
+        return examQuestionNumber;
     }
 }

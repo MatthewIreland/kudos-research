@@ -6,8 +6,8 @@ public class AutomarkableQuestion extends Question {
     private String language;
     private String url;
 
-    public AutomarkableQuestion(String language, String url, String questionText, int questionNumber, boolean isExamQuestion, boolean automarkable, List<Question> subQuestionList, boolean isSubQuestion) {
-        super(questionText, questionNumber, isExamQuestion, automarkable, subQuestionList, isSubQuestion);
+    public AutomarkableQuestion(String language, String url, String questionText, boolean isExamQuestion, boolean automarkable, List<Question> subQuestionList, boolean isSubQuestion) {
+        super(questionText, isExamQuestion, automarkable, subQuestionList, isSubQuestion);
         this.language = language;
         this.url = url;
     }

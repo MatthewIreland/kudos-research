@@ -4,16 +4,14 @@ import java.util.List;
 
 public class Question{
     private String questionText;
-    private int questionID;
     private boolean isExamQuestion;
     private boolean automarkable;
     private List<Question> subQuestionList;
     private boolean hasSubQuestion;
     private boolean isSubQuestion;
 
-    public Question(String questionText, int questionID, boolean isExamQuestion, boolean automarkable, List<Question> subQuestionList, boolean isSubQuestion){
+    public Question(String questionText, boolean isExamQuestion, boolean automarkable, List<Question> subQuestionList, boolean isSubQuestion){
         this.questionText = questionText;
-        this.questionID = questionID;
         this.isExamQuestion = isExamQuestion;
         this.automarkable = automarkable;
         this.subQuestionList = subQuestionList;
@@ -32,8 +30,6 @@ public class Question{
     public boolean isAutomarkable(){ return automarkable; }
 
     public boolean isExamQuestion() { return isExamQuestion; }
-
-    public int getQuestionNumber() { return questionID; }
 
     public boolean hasSubQuestion() { return hasSubQuestion; }
 

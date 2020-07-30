@@ -16,8 +16,9 @@ public class SupervisionQuestions {
 
     public void writeGeneralQuestion(Question question){
         toPrint.append(question.getQuestionText() + "\n");
-        // question that is not an exam question
         if (question.isAutomarkable()){
+            // formatting automarkable questions as \begin{automarkable}{language}{exampleurl.com}
+            //                                      \end{automarkable}
             AutomarkableQuestion automarkableQuestion = (AutomarkableQuestion) question;
             toPrint.append("\\begin{automarkable}{" + automarkableQuestion.getLanguage() + "}{" + automarkableQuestion.getUrl() + "}" + "\n");
             toPrint.append("\\end{automarkable}" + "\n");
@@ -25,6 +26,7 @@ public class SupervisionQuestions {
         if (question.hasSubQuestion()){
             //exam question with subparts
             toPrint.append("\\begin{enumerate}" + "\n" + "\\item ");
+            // recursively call writeQuestions to generate infinite levels of subquestions
             writeQuestions(question.getSubQuestionList());
         }
         toPrint.append("\\end{enumerate}");
@@ -32,16 +34,17 @@ public class SupervisionQuestions {
 
     public StringBuilder writeQuestions(List<Question> questionList){
         for (Question question : questionList){
-            //exam questions
+            //formatting exam questions
             if (question.isExamQuestion()) {
                 ExamQuestion exam = (ExamQuestion) question;
                 if (!question.isSubQuestion()){
                     // will print out in the form of \begin{examquestion}{1900}{1}{1}
-                    toPrint.append("\\begin{examquestion}{" + exam.getYear() + "}{" + exam.getPaper() + "}{" + exam.getQuestionNumber() + "}" + "\n");
+                    toPrint.append("\\begin{examquestion}{" + exam.getYear() + "}{" + exam.getPaper() + "}{" + exam.getExamQuestionNumber() + "}" + "\n");
                 }
                 writeGeneralQuestion(question);
                 toPrint.append("\\end{examquestion}");
             }
+            //formatting non-exam questions
             else{
                 if (!question.isSubQuestion()){
                     // will print out in the form of \section{insert question here}
