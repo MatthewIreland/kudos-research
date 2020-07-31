@@ -155,14 +155,22 @@ public class WorkSender {
         }
     }
 
-    private long requestId = 1;
+    private int requestId = 0;
 
-    private long generateRequestId() {
+    private int generateRequestId() {
         // Generates a request id. Returns a different, higher number every time
         // (except in case of overflow; this will need special treatment on the marking server)
 
         // TODO: this is just a placeholder.
-        return requestId++;
+        int value = requestId;
+
+        try {
+            requestId = Math.addExact(requestId, 1);
+        } catch (ArithmeticException e) {
+            requestId = 0;
+        }
+
+        return value;
     }
 
     private String getPassphrase(String markerHost, int markerPort) {
