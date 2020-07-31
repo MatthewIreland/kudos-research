@@ -6,21 +6,26 @@ public class Task {
     private String taskText;
     private boolean isAutomarkable;
     private List<Task> subTaskList;
-    private boolean hasSubTasks;
-    private boolean isSubTask;
+    private boolean hasSubTasks = false;
 
-    public Task(String taskText, boolean isAutomarkable, List<Task> subTaskList, boolean isSubTask){
+    public Task(String taskText, boolean isAutomarkable, List<Task> subTaskList){
         this.taskText = taskText;
         this.isAutomarkable = isAutomarkable;
         this.subTaskList = subTaskList;
-        this.isSubTask = isSubTask;
+        this.hasSubTasks = true;
+    }
 
-        if (subTaskList.size() > 1){
-            this.hasSubTasks =true;
-        }
-        else {
-            this.hasSubTasks =false;
-        }
+    public Task(String taskText, boolean isAutomarkable){
+        this.taskText = taskText;
+        this.isAutomarkable = isAutomarkable;
+        this.subTaskList = null;
+    }
+
+    public Task(List<Task> subTaskList){
+        this.taskText = "";
+        this.isAutomarkable = false;
+        this.subTaskList = subTaskList;
+        this.hasSubTasks = true;
     }
 
     public String getTaskText() { return taskText; }
@@ -30,7 +35,5 @@ public class Task {
     public boolean hasSubTasks() { return hasSubTasks; }
 
     public List<Task> getSubTaskList() { return subTaskList; }
-
-    public boolean isSubTask() { return isSubTask; }
 
 }

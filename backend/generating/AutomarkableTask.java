@@ -6,11 +6,20 @@ public class AutomarkableTask extends Task {
     private String language;
     private String url;
 
-    public AutomarkableTask(String language, String url, String taskText, boolean isAutomarkable, List<Task> subTaskList, boolean isSubTask) {
-        super(taskText, isAutomarkable, subTaskList, isSubTask);
+    public AutomarkableTask(String taskText, List<Task> subTaskList, String language, String url) {
+        super(taskText, true, subTaskList);
         this.language = language;
         this.url = url;
     }
+
+    public AutomarkableTask(String taskText, String language, String url){
+        super(taskText, true);
+        this.language = language;
+        this.url = url;
+    }
+
+    @Override
+    public boolean isAutomarkable() { return true; }
 
     public String getLanguage() { return language; }
 

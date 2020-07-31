@@ -10,14 +10,13 @@ public class SupervisionTemplate{
     private SupervisionInfo supervisionInfo;
     private SupervisionAgenda tasks;
 
-
     public SupervisionTemplate(SupervisionInfo supervisionInfo, SupervisionAgenda tasks) {
         //these are the things that the user has to specify when modifying the template
         this.supervisionInfo = supervisionInfo;
         this.tasks = tasks;
     }
 
-    public void setSupervisionHeader(){
+    private LinkedHashMap<String, String> getStudentHeaderInfo(){
         LinkedHashMap<String, String> studentData = new LinkedHashMap<>();
         studentData.put("studentname", supervisionInfo.getStudentName());
         studentData.put("studentemail", supervisionInfo.getStudentEmail());
@@ -27,6 +26,11 @@ public class SupervisionTemplate{
         studentData.put("svnumber", supervisionInfo.getSvNumber());
         studentData.put("svdate", supervisionInfo.getSvDate());
         studentData.put("svtime", supervisionInfo.getSvTime());
+        return studentData;
+    }
+
+    public void setSupervisionHeader(){
+        LinkedHashMap<String, String> studentData = getStudentHeaderInfo();
         try (BufferedWriter writeToFile = new BufferedWriter(new FileWriter("per_supervision_headers.tex"))){
             Iterator dataItem = studentData.entrySet().iterator();
 
@@ -49,7 +53,11 @@ public class SupervisionTemplate{
 
     public void setSupervisionQuestions() throws IOException {
         try (BufferedWriter writeToFile = new BufferedWriter(new FileWriter("supervision_questions.tex"))){
-            StringBuilder toPrint = tasks.writeTasks(tasks.getTaskList());
+            // wrapping the questions in an enumerate environment
+            StringBuilder toPrint = new StringBuilder("\\begin{enumerate}" + "\n" + "\n");
+            toPrint.append(tasks.writeTasks(tasks.getTaskList()));
+            toPrint.append("\n" + "\\end{questions}" + "\n" + "\\");
+            toPrint.append("\\end{enumerate}");
             writeToFile.write(toPrint.toString());
 
         } catch (IOException e){
@@ -61,20 +69,5 @@ public class SupervisionTemplate{
     public void createHeaderAndBodyFiles() throws IOException {
         setSupervisionHeader(); //separate per_supervision_headers.tex
         setSupervisionQuestions(); //separate supervision_questions.tex
-        //supervisionInfo.getFileName()
-
-        try (BufferedWriter writeToFile = new BufferedWriter(new FileWriter(supervisionInfo.getFileName()))){
-            StringBuilder toPrint = new StringBuilder();
-            toPrint.append("\\documentclass[10pt,twoside,a4paper]{article}" + "\n");
-            toPrint.append("\\input{per_supervision_headers.tex}" + "\n");
-            toPrint.append("\\input{template.tex}" + "   % template.tex has \\input{includes.tex} at the top" + "\n");
-            toPrint.append("\\begin{document}" + "\n");
-            toPrint.append("\\input{supervision_questions.tex}" + "\n");
-            toPrint.append("\\end{document}");
-            writeToFile.write(toPrint.toString());
-        } catch (IOException e){
-            e.printStackTrace();
-            System.out.println("Error occurred");
-        }
     }
 }
