@@ -26,7 +26,7 @@ let generateGraph n =
 
 let rec generatePath k = if k > 0 then (Random.bool())::(generatePath (k - 1)) else [];;
 
-(* Randomly generates a list of n paths of length k*)
+(* Randomly generates a list of n paths of length k *)
 
 let rec generatePaths k n = if n > 0 then (generatePath k)::(generatePaths k (n - 1)) else [];;
 
@@ -63,15 +63,61 @@ let rec referenceLast2 (ReferenceGraph2(v, left, right, counts)) l =
         else referenceLast2 (ReferenceGraph2(right v, left, right, counts)) xs
 ;;
 
+(* mkgraph *)
+
+let testMkgraphOnFiniteGraph test_ctxt =
+    (*
+        0
+       / \
+      1   2
+     / \ / \
+    3   4   5
+    *)
+    let left n =
+        match n with
+        | 0 -> 1
+        | 1 -> 3
+        | 2 -> 4
+        | _ -> failwith("left(" ^ (string_of_int n) ^ ") is not defined")
+    and right n =
+        match n with
+        | 0 -> 2
+        | 1 -> 4
+        | 2 -> 5
+        | _ -> failwith("right(" ^ (string_of_int n) ^ ") is not defined")
+    in ignore(Submission.mkgraph(0, left, right))
+;;
+
+let testMkgraphOnInfiniteGraph test_ctxt =
+    (*
+         0
+        / \
+        \ /
+         1
+        / \
+        \ /
+         2
+        / \
+        \ /
+         3
+         .
+         .
+         .
+    *)
+    let left n = n + 1
+    and right n = n + 1
+    in ignore(Submission.mkgraph(0, left, right))
+;;
+
 (* last *)
 
-let testLastOnEmptyPath test_ctxt =
+let testLastOnEmptyPathReturnsRootVertex test_ctxt =
     let (root, left, right) = generateGraph 10000 in
     let graph = Submission.mkgraph(root, left, right) in
         assert_equal root (Submission.last graph [])
 ;;
 
-let testLastOnRandomPath test_ctxt =
+let testLastOnRandomPathReturnsCorrectVertex test_ctxt =
     let params = generateGraph 10000 in
     let referenceGraph = referenceMkGraph params in
     let submissionGraph = Submission.mkgraph params in
@@ -79,35 +125,94 @@ let testLastOnRandomPath test_ctxt =
         assert_equal (referenceLast referenceGraph path) (Submission.last submissionGraph path)
 ;;
 
-(* last2 *)
+(* mkgraph2 *)
 
-let testLast2OnEmptyPath test_ctxt =
-    let (root, left, right) = generateGraph 10000 in
-    let graph = Submission.mkgraph2(root, left, right) in
-    let s1 = Submission.last2 graph [] in
-    let s2 = Submission.last2 graph [] in
-    let s3 = Submission.last2 graph [] in
-        assert_equal [(root, 1); (root, 2); (root, 3)] [s1; s2; s3]
+let testMkgraph2OnFiniteGraph test_ctxt =
+    (*
+        0
+       / \
+      1   2
+     / \ / \
+    3   4   5
+    *)
+    let left n =
+        match n with
+        | 0 -> 1
+        | 1 -> 3
+        | 2 -> 4
+        | _ -> failwith("left(" ^ (string_of_int n) ^ ") is not defined")
+    and right n =
+        match n with
+        | 0 -> 2
+        | 1 -> 4
+        | 2 -> 5
+        | _ -> failwith("right(" ^ (string_of_int n) ^ ") is not defined")
+    in ignore(Submission.mkgraph2(0, left, right))
 ;;
 
-let testLast2OnRandomPaths test_ctxt =
+let testMkgraph2OnInfiniteGraph test_ctxt =
+    (*
+         0
+        / \
+        \ /
+         1
+        / \
+        \ /
+         2
+        / \
+        \ /
+         3
+         .
+         .
+         .
+    *)
+    let left n = n + 1
+    and right n = n + 1
+    in ignore(Submission.mkgraph2(0, left, right))
+;;
+
+(* last2 *)
+
+let testLast2OnEmptyPathReturnsRootVertex test_ctxt =
+    let (root, left, right) = generateGraph 10000 in
+    let graph = Submission.mkgraph2(root, left, right) in
+    let (vertex, _) = Submission.last2 graph [] in
+        assert_equal root vertex
+;;
+
+let testLast2OnRandomPathReturnsCorrectVertex test_ctxt =
+    let params = generateGraph 10000 in
+    let referenceGraph = referenceMkGraph2 params in
+    let submissionGraph = Submission.mkgraph2 params in
+    let path = generatePath 500 in
+    let (referenceVertex, _) = referenceLast2 referenceGraph path in
+    let (vertex, _) = Submission.last2 submissionGraph path in
+        assert_equal referenceVertex vertex
+;;
+
+let testLast2OnRandomPathsReturnsCorrectCounts test_ctxt =
     let params = generateGraph 10000 in
     let referenceGraph = referenceMkGraph2 params in
     let submissionGraph = Submission.mkgraph2 params in
     let paths = generatePaths 500 5 in
-    let r = List.map (referenceLast2 referenceGraph) (paths @ List.rev paths)
-    and s = List.map (Submission.last2 submissionGraph) (paths @ List.rev paths)
-    in assert_equal r s
+    let r = List.map (referenceLast2 referenceGraph) (paths @ List.rev paths) in
+    let s = List.map (Submission.last2 submissionGraph) (paths @ List.rev paths) in
+        assert_equal r s
 ;;
 
 
 let suite =
 "1997p1q6TestSuite">:::
 [
-OUnitTest.TestLabel("testLastOnEmptyPath", OUnitTest.TestCase(OUnitTest.Short, testLastOnEmptyPath));
-OUnitTest.TestLabel("testLastOnRandomPath", OUnitTest.TestCase(OUnitTest.Short, testLastOnRandomPath));
-OUnitTest.TestLabel("testLast2OnEmptyPath", OUnitTest.TestCase(OUnitTest.Short, testLast2OnEmptyPath));
-OUnitTest.TestLabel("testLast2OnRandomPaths", OUnitTest.TestCase(OUnitTest.Short, testLast2OnRandomPaths));
+OUnitTest.TestLabel("testMkgraphOnFiniteGraph", OUnitTest.TestCase(OUnitTest.Short, testMkgraphOnFiniteGraph));
+OUnitTest.TestLabel("testMkgraphOnInfiniteGraph", OUnitTest.TestCase(OUnitTest.Short, testMkgraphOnInfiniteGraph));
+OUnitTest.TestLabel("testLastOnEmptyPathReturnsRootVertex", OUnitTest.TestCase(OUnitTest.Short, testLastOnEmptyPathReturnsRootVertex));
+OUnitTest.TestLabel("testLastOnRandomPathReturnsCorrectVertex", OUnitTest.TestCase(OUnitTest.Short, testLastOnRandomPathReturnsCorrectVertex));
+OUnitTest.TestLabel("testMkgraph2OnFiniteGraph", OUnitTest.TestCase(OUnitTest.Short, testMkgraph2OnFiniteGraph));
+OUnitTest.TestLabel("testMkgraph2OnInfiniteGraph", OUnitTest.TestCase(OUnitTest.Short, testMkgraph2OnInfiniteGraph));
+OUnitTest.TestLabel("testLast2OnEmptyPathReturnsRootVertex", OUnitTest.TestCase(OUnitTest.Short, testLast2OnEmptyPathReturnsRootVertex));
+OUnitTest.TestLabel("testLast2OnRandomPathReturnsCorrectVertex", OUnitTest.TestCase(OUnitTest.Short, testLast2OnRandomPathReturnsCorrectVertex));
+OUnitTest.TestLabel("testLast2OnRandomPathsReturnsCorrectCounts", OUnitTest.TestCase(OUnitTest.Short, testLast2OnRandomPathsReturnsCorrectCounts));
 ];;
 
 let () =
