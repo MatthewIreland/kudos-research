@@ -40,6 +40,14 @@ let testIntersectionResultHasNoRepeats =
 	let rndList2 = (intsTo 300) in
 	assert_false (findDupes (Submission.intersect rndList1 rndList2));;
 
+(* how to properly override cons? *)
+let testIntersectionHasFewerConsThanListElements = 
+	let consCount = ref 0 in
+	let cons x xs = consCount := !consCount + 1;
+			x::xs in
+	let rec countConsAndElementsInList xs = (!consCount > List.length xs) in
+	assert_false countConsAndElementsInList (Submission.intersect rndList1 rndList2);;
+
 let testIntersectionSubmissionOrderIsSameOrderAsFirstList = 
 	let rec checkOrder xs ys = match xs, ys with
 	|[], [] -> true
@@ -71,6 +79,14 @@ let testSubtractionResultHasNoRepeats =
 	let rndList1 = (intsTo 500) in
 	let rndList2 = (intsTo 300) in
 	assert_false (findDupes (Submission.subtract rndList1 rndList2));;
+
+(* how to properly override cons? *)
+let testSubtractionHasFewerConsThanListElements = 
+	let consCount = ref 0 in
+	let cons x xs = consCount := !consCount + 1;
+			x::xs in
+	let rec countConsAndElementsInList xs = (!consCount > List.length xs) in
+	assert_false countConsAndElementsInList (Submission.subtract rndList1 rndList2);;
 
 let testSubtractionSubmissionOrderIsSameOrderAsFirstList = 
 	let rec checkOrder xs ys = match xs, ys with
@@ -122,11 +138,13 @@ let suite =
 OUnitTest.TestLabel("testIntersectionOfEmptyListsIsTheEmptyList", OUnitTest.TestCase(OUnitTest.Short, testIntersectionOfEmptyListsIsTheEmptyList));
 OUnitTest.TestLabel("testIntersectionOfOneEmptyListIsTheEmptyList", OUnitTest.TestCase(OUnitTest.Short, testIntersectionOfOneEmptyListIsTheEmptyList));
 OUnitTest.TestLabel("testIntersectionResultHasNoRepeats", OUnitTest.TestCase(OUnitTest.Short, testIntersectionResultHasNoRepeats));
+OUnitTest.TestLabel("testIntersectionHasFewerConsThanListElements", OUnitTest.TestCase(OUnitTest.Short, testIntersectionHasFewerConsThanListElements));
 OUnitTest.TestLabel("testIntersectionSubmissionOrderIsSameOrderAsFirstList", OUnitTest.TestCase(OUnitTest.Short, testIntersectionSubmissionOrderIsSameOrderAsFirstList));
 
 OUnitTest.TestLabel("testSubtractionOfEmptyListsIsTheEmptyList", OUnitTest.TestCase(OUnitTest.Short, testSubtractionOfEmptyListsIsTheEmptyList));
 OUnitTest.TestLabel("testSubtractionOfOneEmptyListIsTheEmptyList", OUnitTest.TestCase(OUnitTest.Short, testSubtractionOfOneEmptyListIsTheEmptyList));
 OUnitTest.TestLabel("testSubtractionResultHasNoRepeats", OUnitTest.TestCase(OUnitTest.Short, testSubtractionResultHasNoRepeats));
+OUnitTest.TestLabel("testSubtractionHasFewerConsThanListElements", OUnitTest.TestCase(OUnitTest.Short, testSubtractionHasFewerConsThanListElements));
 OUnitTest.TestLabel("testSubtractionSubmissionOrderIsSameOrderAsFirstList", OUnitTest.TestCase(OUnitTest.Short, testSubtractionSubmissionOrderIsSameOrderAsFirstList));
 
 OUnitTest.TestLabel("testUnionOfEmptyListsIsTheEmptyList", OUnitTest.TestCase(OUnitTest.Short, testUnionOfEmptyListsIsTheEmptyList));
