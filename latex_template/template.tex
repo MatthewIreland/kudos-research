@@ -1,3 +1,5 @@
+\documentclass[10pt,twoside,a4paper]{article}
+
 \input{../template/includes.tex}
 
 \renewcommand{\headrulewidth}{0.4pt}
@@ -22,7 +24,6 @@
 \newcommand{\examhead}[3]{\section{#1 Paper #2 Question #3}}
 \newenvironment{examquestion}[3]{\examhead{#1}{#2}{#3}\setlist[enumerate, 1]{label=(\alph*)}\setlist[enumerate, 2]{label=(\roman*)}}{}
 
-\documentclass[10pt,twoside,a4paper]{article}
 \input{per_supervision_headers.tex}
 \begin{document}
 \input{supervision_questions.tex}
