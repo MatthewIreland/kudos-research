@@ -39,12 +39,11 @@ let testConcatGeneratesLazyList =
 	let list2 = from 2 in
 	assert_true matchLazyList (Submission.concat list1 list2) ;;
 
-(*let testConcatProperlyAppendsList2ToList1 =
-	let rec checkProperAppending xs ys = match xs, ys
+let testConcatProperlyAppendsList2ToList1 =
 	let rec from k = Cons (k, function () -> from (k+1)) in
 	let list1 = from 1 in
 	let list2 = from 2 in
-	assert_true *) 
+	assert_equal (Lazylist.concat list1 list2) (Submission.concat list1 list2);;
 	
 
 (*interleaving lazy lists: combine*)
@@ -57,6 +56,12 @@ let testCombineGeneratesLazyList =
 	let list1 = from 1 in
 	let list2 = from 2 in
 	assert_true matchLazyList (Submission.combine list1 list2);;
+
+let testCombineProperlyInterleavesList1AndList2 =
+	let rec from k = Cons (k, function () -> from (k+1)) in
+	let list1 = from 1 in
+	let list2 = from 2 in
+	assert_equal (Lazylist.combine list1 list2) (Submission.combine list1 list2);;
 
 (*all0s1s*)
 
@@ -97,6 +102,15 @@ let suite =
 OUnitTest.TestLabel("testExfOnEmptyList", OUnitTest.TestCase(OUnitTest.Short, testExfOnEmptyList ));
 OUnitTest.TestLabel("testExfOnGivenExampleInQuestion", OUnitTest.TestCase(OUnitTest.Short, testExfOnGivenExampleInQuestion));
 OUnitTest.TestLabel("testExfOnLargeExample", OUnitTest.TestCase(OUnitTest.Short, testExfOnLargeExample));
+OUnitTest.TestLabel("testConcatGeneratesLazyList", OUnitTest.TestCase(OUnitTest.Short, testConcatGeneratesLazyList ));
+OUnitTest.TestLabel("testConcatProperlyAppendsList2ToList1 ", OUnitTest.TestCase(OUnitTest.Short, testConcatProperlyAppendsList2ToList1));
+
+OUnitTest.TestLabel("testCombineGeneratesLazyList", OUnitTest.TestCase(OUnitTest.Short, testCombineGeneratesLazyList));
+OUnitTest.TestLabel("testCombineProperlyInterleavesList1AndList2", OUnitTest.TestCase(OUnitTest.Short, testCombineProperlyInterleavesList1AndList2));
+OUnitTest.TestLabel("testAll0s1sGeneratesLazyList", OUnitTest.TestCase(OUnitTest.Short, testAll0s1sGeneratesLazyList));
+OUnitTest.TestLabel("testAll0s1sEachElementInLazyListHasOnly0sand1s", OUnitTest.TestCase(OUnitTest.Short, testAll0s1sEachElementInLazyListHasOnly0sand1s));
+OUnitTest.TestLabel("testPalindromeGeneratesLazyList", OUnitTest.TestCase(OUnitTest.Short, testPalindromeGeneratesLazyList));
+OUnitTest.TestLabel("testEachElementInLazyListIsPalindromic", OUnitTest.TestCase(OUnitTest.Short, testEachElementInLazyListIsPalindromic));
 ];;
 
 let () =
