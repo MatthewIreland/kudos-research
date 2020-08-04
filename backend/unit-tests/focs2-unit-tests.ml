@@ -43,8 +43,10 @@ let testIntersectionResultHasNoRepeats =
 (* how to properly override cons? *)
 let testIntersectionHasFewerConsThanListElements = 
 	let consCount = ref 0 in
-	let cons x xs = consCount := !consCount + 1;
-			x::xs in
+	let (~:) x xs = consCount := !consCount +1; (List.cons x xs) in
+	(* OCaml does not allow us to define custom operators beginning with ":", 
+	so students would need to replace :: with ~: *)
+	(* Student's submission would need to be wrapped here *)
 	let rec countConsAndElementsInList xs = (!consCount > List.length xs) in
 	assert_false countConsAndElementsInList (Submission.intersect rndList1 rndList2);;
 
@@ -83,8 +85,10 @@ let testSubtractionResultHasNoRepeats =
 (* how to properly override cons? *)
 let testSubtractionHasFewerConsThanListElements = 
 	let consCount = ref 0 in
-	let cons x xs = consCount := !consCount + 1;
-			x::xs in
+	let (~:) x xs = consCount := !consCount +1; (List.cons x xs) in
+	(* OCaml does not allow us to define custom operators beginning with ":", 
+	so students would need to replace :: with ~: *)
+	(* Student's submission would need to be wrapped here *)
 	let rec countConsAndElementsInList xs = (!consCount > List.length xs) in
 	assert_false countConsAndElementsInList (Submission.subtract rndList1 rndList2);;
 
