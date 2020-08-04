@@ -6,41 +6,11 @@ import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static parsing.WorkParserConstants.*;
+
 public class WorkParser {
-
-    // Magic constants identifying the different groups in the regular expression.
-    private static final String LANGUAGE_GROUP = "language", MARKER_HOST_GROUP = "host",
-            MARKER_PORT_GROUP = "port", UUID_GROUP = "uuid",CONTENTS_GROUP = "contents";
-
-    // A regular expression to find `automarkable` environments, and extract args and contents.
-    private static final Pattern automarkableRegex;
-
-    static {
-        String languageArg = "\\{(?<" + LANGUAGE_GROUP + ">.*?)\\}";
-        String hostArg = "\\{(?<" + MARKER_HOST_GROUP + ">.*?)\\}";
-        String portArg = "\\{(?<" + MARKER_PORT_GROUP + ">.*?)\\}";
-        String uuidArg = "\\{(?<" + UUID_GROUP + ">.*?)\\}";
-
-        String pattern =
-                "\\\\begin\\{automarkable\\}" + languageArg + hostArg + portArg + uuidArg
-                        + "(?<" + CONTENTS_GROUP + ">.*?)" +
-                "\\\\end\\{automarkable\\}";
-
-        automarkableRegex = Pattern.compile(pattern, Pattern.DOTALL);
-    }
-
-    private static final String CRSID_GROUP = "crsid";
-
-    private static final Pattern crsidRegex;
-
-    static {
-        String pattern = "\\\\newcommand\\{\\\\studentemail\\}\\{(?<" + CRSID_GROUP + ">\\w+?)@cam\\.ac\\.uk\\}";
-
-        crsidRegex = Pattern.compile(pattern, Pattern.DOTALL);
-    }
 
     private final Path workFile;
 
@@ -61,7 +31,7 @@ public class WorkParser {
 
         WorkMetadata metadata = parseMetadata(contents);
 
-        List<Automarkable> automarkables = parseAutomarkable(contents);
+        List<AutomarkableSection> automarkables = parseAutomarkable(contents);
 
         return new ParseResult(metadata, automarkables);
     }
@@ -85,8 +55,8 @@ public class WorkParser {
         }
     }
 
-    private List<Automarkable> parseAutomarkable(String input) throws ParsingException {
-        List<Automarkable> output = new LinkedList<>();
+    private List<AutomarkableSection> parseAutomarkable(String input) throws ParsingException {
+        List<AutomarkableSection> output = new LinkedList<>();
 
         // Use the regex to find all instances of `automarkable` environments.
         Matcher automarkableMatcher = automarkableRegex.matcher(input);
@@ -103,7 +73,7 @@ public class WorkParser {
             String uuid = automarkableMatcher.group(UUID_GROUP);
             String contents = automarkableMatcher.group(CONTENTS_GROUP);
 
-            Automarkable automarkable = new Automarkable(language, host, port, uuid, contents);
+            AutomarkableSection automarkable = new AutomarkableSection(language, host, port, uuid, contents);
             output.add(automarkable);
         }
 

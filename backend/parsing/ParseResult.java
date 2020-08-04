@@ -5,9 +5,9 @@ import java.util.List;
 public class ParseResult {
 
     private final WorkMetadata metadata;
-    private final List<Automarkable> automarkableList;
+    private final List<AutomarkableSection> automarkableList;
 
-    public ParseResult(WorkMetadata metadata, List<Automarkable> automarkableList) {
+    public ParseResult(WorkMetadata metadata, List<AutomarkableSection> automarkableList) {
         this.metadata = metadata;
         this.automarkableList = automarkableList;
     }
@@ -16,7 +16,7 @@ public class ParseResult {
         return metadata;
     }
 
-    public List<Automarkable> getAutomarkableList() {
+    public List<AutomarkableSection> getAutomarkableList() {
         return automarkableList;
     }
 }

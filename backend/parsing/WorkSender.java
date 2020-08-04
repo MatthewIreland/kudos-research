@@ -21,9 +21,9 @@ public class WorkSender {
     public void sendWorkToAutomarker(ParseResult result) throws SubmissionException {
 
         WorkMetadata metadata = result.getMetadata();
-        List<Automarkable> automarkables = result.getAutomarkableList();
+        List<AutomarkableSection> automarkableSections = result.getAutomarkableList();
 
-        for (Automarkable automarkable : automarkables) {
+        for (AutomarkableSection automarkable : automarkableSections) {
             String language = automarkable.getLanguage();
             String markerHost = automarkable.getMarkerHost();
             int markerPort = automarkable.getMarkerPort();

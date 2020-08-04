@@ -1,6 +1,6 @@
 package parsing;
 
-public class Automarkable {
+public class AutomarkableSection {
 
     private final String language;
     private final String markerHost;
@@ -8,7 +8,7 @@ public class Automarkable {
     private final String uuid;
     private final String contents;
 
-    public Automarkable(String language, String markerHost, int markerPort, String uuid, String contents) {
+    public AutomarkableSection(String language, String markerHost, int markerPort, String uuid, String contents) {
         this.language = language;
         this.markerHost = markerHost;
         this.markerPort = markerPort;
