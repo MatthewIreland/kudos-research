@@ -78,7 +78,7 @@ let testFlattenDoesntOmitItems test_ctxt =
 
 
 let suite =
-"1997p1q6TestSuite">:::
+"2015p1q2TestSuite">:::
 [
 OUnitTest.TestLabel("testHeadOnIntegersReturns1", OUnitTest.TestCase(OUnitTest.Short, testHeadOnIntegersReturns1));
 
