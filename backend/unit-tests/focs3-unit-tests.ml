@@ -80,7 +80,14 @@ let testAll0s1sEachElementInLazyListHasOnly0sand1s =
 	| Cons(a, b) -> if (hasOnly1sAnd0s a) then (checkOnly1sAnd0s (b())) else false in
 	assert_true checkOnly1sAnd0s (Submission.all0s1s);;
 	
-
+let testAll0s1sContainsElementsFromExample = 
+	let rec lazyContainsElements lazy xs = match lazy, xs with
+	| _ , [] -> true
+	| Nil, xs -> false
+	| Cons(a, b), x::xs -> if (a==x) then (lazyContainsElements b() xs)
+				else (lazyContainsElements b() (x::xs)) in
+	assert_true lazyContainsElements (Submission.all0s1s [[]; [0]; [1]; [0; 0]; [0; 1]; [1; 0]; [1; 1]; [0; 0; 0]])
+	
 (*palindrome*)
 
 let testPalindromeGeneratesLazyList = 
@@ -109,6 +116,7 @@ OUnitTest.TestLabel("testCombineGeneratesLazyList", OUnitTest.TestCase(OUnitTest
 OUnitTest.TestLabel("testCombineProperlyInterleavesList1AndList2", OUnitTest.TestCase(OUnitTest.Short, testCombineProperlyInterleavesList1AndList2));
 OUnitTest.TestLabel("testAll0s1sGeneratesLazyList", OUnitTest.TestCase(OUnitTest.Short, testAll0s1sGeneratesLazyList));
 OUnitTest.TestLabel("testAll0s1sEachElementInLazyListHasOnly0sand1s", OUnitTest.TestCase(OUnitTest.Short, testAll0s1sEachElementInLazyListHasOnly0sand1s));
+OUnitTest.TestLabel("testAll0s1sContainsElementsFromExample ", OUnitTest.TestCase(OUnitTest.Short, testAll0s1sContainsElementsFromExample ));
 OUnitTest.TestLabel("testPalindromeGeneratesLazyList", OUnitTest.TestCase(OUnitTest.Short, testPalindromeGeneratesLazyList));
 OUnitTest.TestLabel("testEachElementInLazyListIsPalindromic", OUnitTest.TestCase(OUnitTest.Short, testEachElementInLazyListIsPalindromic));
 ];;
