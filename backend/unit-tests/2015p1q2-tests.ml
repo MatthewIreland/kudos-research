@@ -2,6 +2,14 @@ open OUnit2;;
 
 Random.self_init ();;
 
+(* Generates a random integer between n and 2n - 1 *)
+
+let genRandomItem ?n:(n0=8192) () = n0 + Random.int n0;;
+
+(* Call f n times *)
+
+let repeat n f = for i = 1 to n do f i done;;
+
 (* Returns the nth item (starting from 1) from the given lazy list *)
 
 let rec nth n l = if n > 1 then nth (n - 1) (Submission.tail l) else Submission.head l;;
@@ -21,8 +29,9 @@ let testHeadOnIntegersReturns1 test_ctxt = assert_equal 1 (Submission.head Submi
 (* integers & tail *)
 
 let testRandomItemInIntegersHasCorrectValue test_ctxt =
-    let n = 1 + Random.int 100000 in
-    assert_equal n (nth n Submission.integers)
+    repeat 5 (fun _ ->
+        let n = genRandomItem() in
+        assert_equal n (nth n Submission.integers))
 ;;
 
 (* map *)
@@ -34,45 +43,54 @@ let testMapIntegersToStringsHasCorrectType test_ctxt =
 ;;
 
 let testMapIntegersToStringsHasCorrectValues test_ctxt =
-    let l = Submission.map string_of_int Submission.integers
-    and n = 1 + Random.int 100000 in
-    assert_equal (string_of_int n) (nth n l)
+    let l = Submission.map string_of_int Submission.integers in
+    repeat 5 (fun _ ->
+        let n = genRandomItem() in
+        assert_equal (string_of_int n) (nth n l))
 ;;
 
 (* diag *)
 
-let testDiag test_ctxt =
-    let l = Submission.diag (Submission.map (fun n -> Submission.map (fun m -> n * m) Submission.integers) Submission.integers)
-    and n = 1 + Random.int 100000 in
-    assert_equal (n * n) (nth n l)
+let testDiagHasCorrectType test_ctxt =
+    let checkType (l: string Submission.lazylist) = ()
+    and l = Submission.diag (Submission.map (fun n -> Submission.map (fun m -> string_of_int (n * m)) Submission.integers) Submission.integers) in
+    checkType(l)
+;;
+
+let testDiagHasCorrectValues test_ctxt =
+    let l = Submission.diag (Submission.map (fun n -> Submission.map (fun m -> n * m) Submission.integers) Submission.integers) in
+    repeat 5 (fun _ ->
+        let n = genRandomItem() in
+        assert_equal (n * n) (nth n l))
 ;;
 
 (* grid *)
 
 let testGridHasCorrectType test_ctxt =
-    let checkType (l: int Submission.lazylist Submission.lazylist) = ()
-    and l = Submission.grid Submission.integers Submission.integers (fun x y -> x + y) in
+    let checkType (l: string Submission.lazylist Submission.lazylist) = ()
+    and l = Submission.grid Submission.integers Submission.integers (fun x y -> string_of_int (x + y)) in
     checkType(l)
 ;;
 
 let testGridHasCorrectValues test_ctxt =
-    let l = Submission.grid Submission.integers Submission.integers cantorPairingFunction
-    and n = 1 + Random.int 100000
-    and m = 1 + Random.int 100000 in
-    assert_equal (cantorPairingFunction n m) (nth m (nth n l))
+    let l = Submission.grid Submission.integers Submission.integers cantorPairingFunction in
+    repeat 5 (fun _ ->
+        let n = genRandomItem()
+        and m = genRandomItem() in
+        assert_equal (cantorPairingFunction n m) (nth m (nth n l)))
 ;;
 
 (* flatten *)
 
 let testFlattenHasCorrectType test_ctxt =
-    let checkType (l: int Submission.lazylist) = ()
-    and l = Submission.flatten (Submission.grid Submission.integers Submission.integers cantorPairingFunction) in
+    let checkType (l: string Submission.lazylist) = ()
+    and l = Submission.flatten (Submission.grid Submission.integers Submission.integers (fun x y -> string_of_int (x + y))) in
     checkType(l)
 ;;
 
 let testFlattenDoesntOmitItems test_ctxt =
     let l = Submission.flatten (Submission.grid Submission.integers Submission.integers cantorPairingFunction)
-    and n = 50001 + Random.int 100000 in
+    and n = genRandomItem() in
     assert_bool "" (find n l)
 ;;
 
@@ -87,7 +105,8 @@ OUnitTest.TestLabel("testRandomItemInIntegersHasCorrectValue", OUnitTest.TestCas
 OUnitTest.TestLabel("testMapIntegersToStringsHasCorrectType", OUnitTest.TestCase(OUnitTest.Short, testMapIntegersToStringsHasCorrectType));
 OUnitTest.TestLabel("testMapIntegersToStringsHasCorrectValues", OUnitTest.TestCase(OUnitTest.Short, testMapIntegersToStringsHasCorrectValues));
 
-OUnitTest.TestLabel("testDiag", OUnitTest.TestCase(OUnitTest.Short, testDiag));
+OUnitTest.TestLabel("testDiagHasCorrectType", OUnitTest.TestCase(OUnitTest.Short, testDiagHasCorrectType));
+OUnitTest.TestLabel("testDiagHasCorrectValues", OUnitTest.TestCase(OUnitTest.Short, testDiagHasCorrectValues));
 
 OUnitTest.TestLabel("testGridHasCorrectType", OUnitTest.TestCase(OUnitTest.Short, testGridHasCorrectType));
 OUnitTest.TestLabel("testGridHasCorrectValues", OUnitTest.TestCase(OUnitTest.Short, testGridHasCorrectValues));
