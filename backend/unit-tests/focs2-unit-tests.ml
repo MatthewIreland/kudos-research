@@ -141,18 +141,21 @@ let suite =
 [
 OUnitTest.TestLabel("testIntersectionOfEmptyListsIsTheEmptyList", OUnitTest.TestCase(OUnitTest.Short, testIntersectionOfEmptyListsIsTheEmptyList));
 OUnitTest.TestLabel("testIntersectionOfOneEmptyListIsTheEmptyList", OUnitTest.TestCase(OUnitTest.Short, testIntersectionOfOneEmptyListIsTheEmptyList));
+OUnitTest.TestLabel("testIntersectionOnNonEmptyLists", OUnitTest.TestCase(OUnitTest.Short, testIntersectionOnNonEmptyLists));
 OUnitTest.TestLabel("testIntersectionResultHasNoRepeats", OUnitTest.TestCase(OUnitTest.Short, testIntersectionResultHasNoRepeats));
 OUnitTest.TestLabel("testIntersectionHasFewerConsThanListElements", OUnitTest.TestCase(OUnitTest.Short, testIntersectionHasFewerConsThanListElements));
 OUnitTest.TestLabel("testIntersectionSubmissionOrderIsSameOrderAsFirstList", OUnitTest.TestCase(OUnitTest.Short, testIntersectionSubmissionOrderIsSameOrderAsFirstList));
 
 OUnitTest.TestLabel("testSubtractionOfEmptyListsIsTheEmptyList", OUnitTest.TestCase(OUnitTest.Short, testSubtractionOfEmptyListsIsTheEmptyList));
 OUnitTest.TestLabel("testSubtractionOfOneEmptyListIsTheEmptyList", OUnitTest.TestCase(OUnitTest.Short, testSubtractionOfOneEmptyListIsTheEmptyList));
+OUnitTest.TestLabel("testSubtractionOnNonEmptyLists", OUnitTest.TestCase(OUnitTest.Short, testSubtractionOnNonEmptyLists));
 OUnitTest.TestLabel("testSubtractionResultHasNoRepeats", OUnitTest.TestCase(OUnitTest.Short, testSubtractionResultHasNoRepeats));
 OUnitTest.TestLabel("testSubtractionHasFewerConsThanListElements", OUnitTest.TestCase(OUnitTest.Short, testSubtractionHasFewerConsThanListElements));
 OUnitTest.TestLabel("testSubtractionSubmissionOrderIsSameOrderAsFirstList", OUnitTest.TestCase(OUnitTest.Short, testSubtractionSubmissionOrderIsSameOrderAsFirstList));
 
 OUnitTest.TestLabel("testUnionOfEmptyListsIsTheEmptyList", OUnitTest.TestCase(OUnitTest.Short, testUnionOfEmptyListsIsTheEmptyList));
 OUnitTest.TestLabel("testUnionOfOneEmptyListIsTheEmptyList", OUnitTest.TestCase(OUnitTest.Short, testUnionOfOneEmptyListIsTheEmptyList));
+OUnitTest.TestLabel("testUnionOnNonEmptyLists", OUnitTest.TestCase(OUnitTest.Short, testUnionOnNonEmptyLists));
 OUnitTest.TestLabel("testUnionResultHasNoRepeats", OUnitTest.TestCase(OUnitTest.Short, testUnionResultHasNoRepeats));
 OUnitTest.TestLabel("testUnionSubmissionOrderHasFirstListElementsFirst", OUnitTest.TestCase(OUnitTest.Short, testUnionSubmissionOrderHasFirstListElementsFirst));
 ];;
