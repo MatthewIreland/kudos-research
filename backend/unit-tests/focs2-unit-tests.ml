@@ -40,7 +40,6 @@ let testIntersectionResultHasNoRepeats =
 	let rndList2 = (intsTo 300) in
 	assert_false (findDupes (Submission.intersect rndList1 rndList2));;
 
-(* how to properly override cons? *)
 let testIntersectionHasFewerConsThanListElements = 
 	let consCount = ref 0 in
 	let (~:) x xs = consCount := !consCount +1; (List.cons x xs) in
@@ -82,7 +81,6 @@ let testSubtractionResultHasNoRepeats =
 	let rndList2 = (intsTo 300) in
 	assert_false (findDupes (Submission.subtract rndList1 rndList2));;
 
-(* how to properly override cons? *)
 let testSubtractionHasFewerConsThanListElements = 
 	let consCount = ref 0 in
 	let (~:) x xs = consCount := !consCount +1; (List.cons x xs) in
