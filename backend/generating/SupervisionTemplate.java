@@ -1,9 +1,12 @@
 package generation;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
+import java.io.*;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class SupervisionTemplate{
 
@@ -69,5 +72,32 @@ public class SupervisionTemplate{
     public void createHeaderAndBodyFiles() throws IOException {
         setSupervisionHeader(); //separate per_supervision_headers.tex
         setSupervisionQuestions(); //separate supervision_questions.tex
+        zipAllTemplateFiles();
     }
+
+    public void zipAllTemplateFiles(){
+        // 4 files below are the ones needed to generate the latex file
+        ArrayList<String> fileList = new ArrayList<String>(Arrays.asList("per_supervision_headers.tex", "supervision_questions.tex", "template.tex", "includes.tex"));
+
+        try {
+            FileOutputStream fos = new FileOutputStream(supervisionInfo.getFileName());
+            ZipOutputStream zos = new ZipOutputStream(fos);
+
+            for (String file: fileList) {
+                ZipEntry ze = new ZipEntry(new File(file).getName());
+                zos.putNextEntry(ze);
+
+                byte[] buffer = Files.readAllBytes(Paths.get(file));
+                zos.write(buffer, 0, buffer.length);
+                zos.closeEntry();
+
+            }
+
+            zos.close();
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
 }
